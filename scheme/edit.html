@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Landing page builder</title>
+
+    <link href="/scheme/dragula.css" rel="stylesheet">
+    <link href="/scheme/cus.css" rel="stylesheet">
+
+    {{customcss}}
+</head>
+<body class="blur-theme">
+<div class="grid grid-flow-col grid-cols-12 w-full">
+    <div class="py-2 text-gray-900 bg-white rounded-lg shadow-lg">
+        <div lp-data-id="landingpage-itemcontent" class="fixed w-1/12 z-30 text-center">
+
+            <button onClick="SubmitTest()" type="button" class="btn btn-primary btn-xs m-auto">Test</button>
+            <div class="border-b py-1"></div>
+
+            <div class="landingpage-pickzone">
+                {{toolcontent}}
+            </div>
+        </div>
+
+    </div>
+    <div class="min-h-screen col-span-11 border-t border-b sm:rounded sm:border shadow">
+        <div lp-data-id="landingpage-content" >{{pagecontent}}</div>
+        <div lp-data-id="landingpage-previewcontent" class="hidden landingpage-preview-tabletframe">
+        <iframe id="preview" >
+        </iframe>
+        </div>
+
+    </div>
+</div>
+
+
+<div class="btnmodal h-screen w-full fixed left-0 top-0 flex justify-center items-center bg-black bg-opacity-50 hidden">
+    <!-- modal -->
+    <div class="bg-white rounded shadow-lg w-1/3">
+        <!-- modal header -->
+        <div class="border-b px-4 py-2 flex justify-between items-center">
+            <h3 class="font-semibold text-lg">Change Item Link</h3>
+            <button class="text-black close-modal">&cross;</button>
+        </div>
+        <!-- modal body -->
+        <div class="p-3">
+
+            <label for="btnTitle" class="text-gray-700">Title</label>
+            <input class="border rounded p-1 form-input mt-1 block w-full" id="modalInputTitle" placeholder="input title" />
+            <label for="btnUrl" class="text-gray-700">Url</label>
+            <input class="border rounded p-1 form-input mt-1 block w-full" id="modalInputUrl" placeholder="input url" />
+            <label for="btnUrl" class="text-gray-700">Inner Text</label>
+            <textarea class="border rounded p-1 form-input mt-1 block w-full" id="modalInputText" placeholder="text"></textarea>
+        </div>
+        <div class="flex justify-end items-center w-100 border-t p-3">
+            <button class="bg-red-600 hover:bg-red-700 px-3 py-1 rounded text-white mr-1 close-modal">Cancel</button>
+            <button class="bg-blue-600 hover:bg-blue-700 px-3 py-1 rounded text-white submit-modal">Ok</button>
+        </div>
+    </div>
+</div>
+<div id="preloader" class="preloader-inner"><div></div></div>
+<script src="https://code.jquery.com/jquery-3.5.1.min.js" integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>
+{{customjs}}
+<script src="/scheme/dragula.min.js"></script>
+<script>
+    //==========modal script
+
+    const btnmodal = document.querySelector('.btnmodal');
+    const closeModal = document.querySelectorAll('.close-modal');
+    const submitModal = document.querySelectorAll('.submit-modal');
+    let fnAfterSubmitModal=()=>{}
+    function showModal(title,url,text) {
+        document.querySelector("#modalInputTitle").value=title
+        document.querySelector("#modalInputUrl").value=url
+        document.querySelector("#modalInputText").value=text
+        btnmodal.classList.remove('hidden')
+    }
+
+    closeModal.forEach(close => {
+        close.addEventListener('click', function (){
+            btnmodal.classList.add('hidden')
+        });
+    });
+
+    submitModal.forEach(evt => {
+        evt.addEventListener('click', (e)=>{
+            fnAfterSubmitModal()
+            btnmodal.classList.add('hidden')
+        });
+    });
+
+    //=====================
+    const MTools={{mtoolcontent}}
+        const navitemtemplate=`{{navitemtemplate}}`
+
+    const drake=dragula([document.querySelector("div.landingpage-pickzone"),...document.querySelectorAll("div.drop-zone"),document.querySelector("div.mega-menu")],{
+        copy: function (el, target) {
+            return !target.classList.contains("drop-zone")
+
+        },
+        moves: function (el, source, handle, sibling) {
+            if(el.classList.contains("cus-not-draggable"))return false
+            return true; // elements are always draggable by default
+        },
+
+        copySortSource: false,
+        accepts: function (el, target, source, sibling) {
+
+            return target.classList.contains("drop-zone")
+            //return true; // elements can be dropped in any of the `containers` by default
+        },
+    });
+
+    drake.on('shadow', (el, target, source) => {
+        console.log(el,target,source)
+
+        if(!target||!target.classList.contains("drop-zone"))return
+        if(!source||!(source.classList.contains("landingpage-pickzone")||source.classList.contains("mega-menu")))return
+        el.className="m-auto landingpage-cursor-pointer relative gu-transit"
+
+        console.log(el.getAttribute("lp-data-id"))
+        const content=MTools[el.getAttribute("lp-data-id").replace("landingpage-tool-","")]
+
+        el.innerHTML=content
+
+
+    })
+
+    drake.on('drop', (el, target, source,sibling) => {
+        if(!target||!target.classList.contains("drop-zone"))return
+        if(!source||!(source.classList.contains("landingpage-pickzone")||source.classList.contains("mega-menu")))return
+        if(el.getAttribute("lp-data-id")=="a"){
+            //generate nav item
+            const name=prompt("Navigation Name:","")
+            if(name!=null&&name.trim()!=""){
+                const id=name.replace(" ","-")
+                const content=navitemtemplate.replace(new RegExp("\{\{Id\}\}","gm"),id).replace(new RegExp("\{\{Name\}\}","gm"),name)
+                const navels=document.querySelectorAll(".landingpage-navitem-content")
+                for(let i=0,n=navels.length;i<n;i++){
+                    navels[i].innerHTML+=content
+                    checkEditable(navels[i])
+                }
+                el.setAttribute("lp-data-id","a_"+id+"_"+name)
+                el.innerHTML=el.innerHTML.replace(new RegExp("\{\{Id\}\}","gm"),id).replace(new RegExp("\{\{Name\}\}","gm"),name).replace(new RegExp("\{\{trashtitle\}\}","gm"),name)
+            }else{
+                return false
+            }
+        }
+        checkEditable(el)
+
+
+    })
+
+
+
+    function changeButtonOnclickEvent(btnEl){
+
+        btnEl.onclick=(e)=>{
+
+            e.preventDefault()
+            let buttonurl=btnEl.getAttribute("onclick")
+            let buttontitle=btnEl.getAttribute("title")
+            console.log(btnEl)
+            let innerText=btnEl.innerHTML
+            if(buttonurl)
+                buttonurl=buttonurl.replace("window.location=","").replace(/['"]/g,"")
+            else buttonurl="#"
+            // const newurl=prompt("change url:",buttonurl)
+            // if(newurl!=null)
+            //     btnEl.setAttribute(`onclick`,`window.location='`+newurl+`'`)
+
+            fnAfterSubmitModal=()=>{
+                btnEl.setAttribute(`onclick`,`window.location='`+document.querySelector("#modalInputUrl").value+`'`)
+                btnEl.setAttribute(`title`,document.querySelector("#modalInputTitle").value)
+                btnEl.innerHTML=document.querySelector("#modalInputText").value
+                changeButtonOnclickEvent(btnEl)
+            }
+            showModal(buttonurl,buttontitle,innerText)
+            //call recursive to apply new attribute value
+
+        }
+    }
+    function checkEditable(el){
+        if(el.classList.contains("element-not-editable"))return
+        if(el.tagName=="A"){
+            el.onclick=(e)=>{
+                e.preventDefault()
+                fnAfterSubmitModal=()=>{
+                    el.href=document.querySelector("#modalInputUrl").value
+                    el.title=document.querySelector("#modalInputTitle").value
+                    el.innerHTML=document.querySelector("#modalInputText").value
+                    el.focus()
+                }
+                showModal(el.title,el.href,el.innerHTML)
+            }
+
+        }
+        if(el.tagName=="IMG"){
+            el.onclick=(e)=>{
+                e.preventDefault()
+                fnAfterSubmitModal=()=>{
+                    el.src=document.querySelector("#modalInputUrl").value
+                    el.title=document.querySelector("#modalInputTitle").value
+                    //el.innerHTML=document.querySelector("#modalInputText").value
+                    //el.focus()
+                }
+                showModal(el.title,el.src,"N/A")
+            }
+        }
+        if(el.tagName=="BUTTON"){
+            changeButtonOnclickEvent(el)
+        }
+        if(el.childElementCount>0){
+            if(el.tagName=="P"){
+             el.contentEditable=true
+            }
+                for (let i = 0, n = el.childElementCount; i < n; i++)
+                    checkEditable(el.children[i])
+
+        }else{
+            //check if have text
+            if(el.innerText!=""){
+                el.contentEditable=true
+            }
+        }
+    }
+    function RemoveItem(el){
+        const vtypes=el.parentNode.getAttribute("lp-data-id").split("_")
+        if(vtypes.length>0){
+            if(vtypes[0]=="a"){
+                document.querySelector("[lp-data-id=landingpage-navitem-"+vtypes[1]+"]").remove()
+            }
+        }
+        el.parentNode.remove()
+    }
+
+    function DisableContentEditable(){
+        document.querySelectorAll(`[contenteditable]`).forEach(el=>{
+            el.contentEditable=false
+        })
+    }
+    function SubmitTest(){
+        document.querySelector("#preloader").classList.remove("hidden")
+        $.post('/test/submit/{{templatename}}',{"data":document.querySelector("div[lp-data-id=landingpage-content]").innerHTML}).done((rs)=>{
+            console.log(rs)
+            try{
+                rs=JSON.parse(rs)
+                if(rs.status==1){
+                    window.location="/templates/{{templatename}}/out"
+                }else{
+                    alert(rs.error)
+                }
+            }catch (e) {
+                alert(e.message)
+            }
+            document.querySelector("#preloader").classList.add("hidden")
+        });
+    }
+
+    $( document ).ready(function() {
+        document.querySelector("#preloader").classList.add("hidden")
+    });
+
+
+</script>
+</body>
+</html>

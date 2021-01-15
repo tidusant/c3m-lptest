@@ -1,0 +1,195 @@
+
+/* ––––––––––––––––––––––––––––––––––––––––––––––––––
+  Based on: https://codepen.io/nickelse/pen/YGPJQG
+  Influenced by: https://sproutsocial.com/
+–––––––––––––––––––––––––––––––––––––––––––––––––– */
+
+
+/* #Mega Menu Styles
+–––––––––––––––––––––––––––––––––––––––––––––––––– */
+.mega-menu {
+    display: none;
+    left: 0;
+    position: absolute;
+    text-align: left;
+
+}
+
+
+
+/* #hoverable Class Styles
+–––––––––––––––––––––––––––––––––––––––––––––––––– */
+.hoverable {
+    position: static;
+}
+
+.hoverable > a:after {
+    content: "\25BC";
+    font-size: 10px;
+    padding-left: 6px;
+    position: relative;
+    top: -1px;
+}
+
+.hoverable:hover .mega-menu {
+    display: flex;
+}
+
+
+/* #toggle Class Styles
+–––––––––––––––––––––––––––––––––––––––––––––––––– */
+
+.toggleable > label:after {
+    content: "\25BC";
+    font-size: 10px;
+    padding-left: 6px;
+    position: relative;
+    top: -1px;
+}
+
+.toggle-input {
+    display: none;
+}
+.toggle-input:not(checked) ~ .mega-menu {
+    display: none;
+}
+
+.toggle-input:checked ~ .mega-menu {
+    display: block;
+}
+
+.toggle-input:checked + label {
+    color: white;
+    background: #2c5282; /*@apply bg-blue-800 */
+}
+
+.toggle-input:checked ~ label:after {
+    content: "\25B2";
+    font-size: 10px;
+    padding-left: 6px;
+    position: relative;
+    top: -1px;
+}
+.btnmodal,.navmodal{
+    z-index: 31;
+}
+.landingpage-cursor-pointer:hover div.landingpage-trash{
+    display:block;
+}
+.landingpage-cursor-pointer{
+    cursor: pointer;
+}
+.landingpage-preview-tabletframe{
+    background: url(/scheme/images/tabletframe.svg);
+    height: 1242px;
+    margin: 20px auto;
+    width: 871px;
+    padding-top: 106px;
+    padding-left: 44px;
+}
+.landingpage-tabletframe-content{
+    width: 783px;
+    height: 1038px;
+
+}
+.landingpage-preview-mobileframe{
+    background: url(/scheme/images/mobileframe.svg);
+    height: 707px;
+    margin: 20px auto;
+    width: 370px;
+    padding-top: 105px;
+    padding-left: 19px;
+}
+.landingpage-mobileframe-content{
+    width: 335px;
+    height: 496px;
+
+}
+body.blur-theme {
+    margin: 0;
+}
+body.blur-theme::before {
+    position: fixed;
+    background: url(/scheme/images/blur-bg-blurred.jpg) center center no-repeat;
+    background-size: cover;
+}
+body.blur-theme::before, body.mobile.blur-theme .body-bg::before {
+    content: '';
+    height: 100%;
+    top: 0;
+    left: 0;
+    will-change: transform;
+    z-index: -1;
+    width: 100%;
+}
+
+
+
+#preloader {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1000;
+    background: rgba(0, 0, 0, 0.3);
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden
+}
+#preloader.preloader-inner {
+
+    background: #00000070;
+}
+
+#preloader>div,
+.widgets {
+    -webkit-backface-visibility: hidden
+}
+
+#preloader>div {
+    display: block;
+    position: relative;
+    left: 50%;
+    top: 50%;
+    width: 150px;
+    height: 150px;
+    margin: -75px 0 0 -75px;
+    border-radius: 50%;
+    border: 3px solid transparent;
+    border-top-color: #e85656;
+    -webkit-transform: translate3d(0, 0, 0);
+    transform: translate3d(0, 0, 0);
+    backface-visibility: hidden;
+    -webkit-animation: spin 2s linear infinite;
+    animation: spin 2s linear infinite
+}
+
+#preloader>div:after,
+#preloader>div:before {
+    content: "";
+    position: absolute
+}
+
+#preloader>div:before {
+    top: 5px;
+    left: 5px;
+    right: 5px;
+    bottom: 5px;
+    border-radius: 50%;
+    border: 3px solid transparent;
+    border-top-color: #209e91;
+    -webkit-animation: spin 3s linear infinite;
+    animation: spin 3s linear infinite
+}
+
+#preloader>div:after {
+    top: 15px;
+    left: 15px;
+    right: 15px;
+    bottom: 15px;
+    border-radius: 50%;
+    border: 3px solid transparent;
+    border-top-color: #dfb81c;
+    -webkit-animation: spin 1.5s linear infinite;
+    animation: spin 1.5s linear infinite
+}
